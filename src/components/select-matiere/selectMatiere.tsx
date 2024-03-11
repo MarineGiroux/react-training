@@ -9,15 +9,15 @@ const matieres = [
     label: "Alu",
     }
   ]
-  
-const onChangeMatiere = (value : string) => {
-console.log(value);
 
+
+interface SelectMatiereProps{
+    onSelectMatiere?: (value: string ) => void
 }
 
-const SelectMatiere = () => 
+const SelectMatiere = ({onSelectMatiere}: SelectMatiereProps) => 
 
     <Select options ={matieres} className='matiere' placeholder ='Choix de la matière' 
-    defaultValue='ALU' onChange={onChangeMatiere}/>
+    defaultValue='ALU' onChange={onSelectMatiere}/>
 
 export default SelectMatiere;
