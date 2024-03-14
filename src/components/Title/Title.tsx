@@ -2,7 +2,7 @@ import './Title.css'
 
 const Title = () => 
     <div>
-        <h1>Fabera Training App</h1>
+        <img className ="logo-entete" src="fabera.png" />
     </div>
 
 

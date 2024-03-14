@@ -1,23 +1,23 @@
-import './selectMatiere.css'
+import React from 'react';
 import { Select } from 'antd';
+import './selectMatiere.css'
 
-const matieres = [
-    {value : "INOX",
-    label: "Inox",
-    },
-    {value : "ALU",
-    label: "Alu",
-    }
-  ]
-
-
-interface SelectMatiereProps{
-    onSelectMatiere?: (value: string ) => void
+interface SelectMatiereProps {
+  matieres: string[]; 
+  onSelectMatiere: (value: string) => void;  
+  selectedMatiere: string;  
 }
 
-const SelectMatiere = ({onSelectMatiere}: SelectMatiereProps) => 
 
-    <Select options ={matieres} className='matiere' placeholder ='Choix de la matière' 
-    defaultValue='ALU' onChange={onSelectMatiere}/>
+const SelectMatiere: React.FC<SelectMatiereProps> = ({ matieres, onSelectMatiere, selectedMatiere }) => (
+  <Select
+    className='matiere'  
+    placeholder='Choix de la matière' 
+    onChange={onSelectMatiere} 
+    value={selectedMatiere}  
+    options={matieres.map(matiere => ({ value: matiere, label: matiere }))}  
+  />
+);
+
 
 export default SelectMatiere;

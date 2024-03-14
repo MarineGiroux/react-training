@@ -1,3 +1,6 @@
 .bouton{
-    margin: 15px;
+    margin-right: 3%;
+    position:relative; 
+    display:inline-block; 
+    float:right;
 }
