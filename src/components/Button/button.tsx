@@ -3,7 +3,7 @@ import './button.css';
 import { Button } from 'antd';
 
 interface BoutonProps {
-  onClick: () => void; // Spécifiez le type de la prop onClick comme une fonction sans paramètre et sans valeur de retour
+  onClick: () => void; 
 }
 
 function Bouton({ onClick }: BoutonProps) {
