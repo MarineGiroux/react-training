@@ -1,136 +1,98 @@
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import Title from './components/Title/Title';
-import SelectMatiere from './components/select-matiere/selectMatiere';
-import VariationMatiere from './components/variation-matiere/variationMatiere';
-import InputText from './components/InputTexte/InputText';
-import InputNum from './components/InputNumber/inputNumber';
 import Bouton from './components/Button/button';
-import SelectFormat from './components/selectFormatMatiere/selectFormatMatiere';
+import { forgeToken } from './services/authenticationService';
+import ListeMatiere from './components/liste-matiere/listeMatiere';
+import ListeFormat from './components/liste-format/listeFormat';
+import ListeLongueur from './components/liste-longueur/listeLongueur';
+import ListeLargeur from './components/liste-largeur/listeLargeur';
+import ListeEpaisseur from './components/liste-epaisseur/listeEpaisseur';
 
-const matieresEtVariations = {
-  INOX: [
-    { variation: '304L', prix: 296 },
-    { variation: '316L', prix: 440 }
-  ],
-  ALU: [
-    { variation: '5052', prix: 248 },
-    { variation: '7075', prix: 380 }
-  ],
-  LAITON: [
-    { variation:'CW614N', prix: 827}
-  ]
-};
-
-const formatMatiere = ['Barre', 'Brut', 'Tole', 'Tube', 'Autre'];
-
-
-type MatiereType = keyof typeof matieresEtVariations;
-type FormatType = keyof typeof formatMatiere;
+forgeToken();
 
 function App() {
-  const [matiere, setMatiere] = useState<MatiereType | ''>('');
-  const [variation, setVariation] = useState('');
-  const [prix, setPrix] = useState<number | ''>('');
-  const [refPiece, setRefPiece] = useState('');
-  const [longueurPiece, setLgPiece] = useState('');
+  const [matiere, setMatiere] = useState('');
   const [format, setFormat] = useState('');
-  const [quantitePiece, setQtePiece] = useState('');
+  const [longueurPiece, setLgPiece] = useState<number | ''>(''); 
+  const [largeurPiece, setLargPiece] = useState<number | ''>(''); 
+  const [epaisseurPiece, setEpPiece] = useState<number | ''>(''); 
   const [showChoices, setShowChoices] = useState(false);
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      await forgeToken();
+    };
+    fetchToken();
+  }, []);
 
   const handleShowChoices = () => {
     setShowChoices(true);
   };
 
-  const handleSelectFormat = (value: string) => {
-    if(formatMatiere.includes(value)){
-      setFormat(value);
-    }else {
-      console.error("Aucun format sélectionné");
-    }
-  }
-
   const handleSelectMatiere = (value: string) => {
-    if (value in matieresEtVariations) {
-      setMatiere(value as MatiereType);
-      setVariation('');      
-      console.log(variation);
-      
-      setPrix('');
-    } else {
-      console.error("La valeur sélectionnée n'est pas une matière valide.");
-    }
+    setMatiere(value);
   };
 
-  const handleSelectVariation = (value: string) => {
-    if (matiere && matieresEtVariations[matiere]) {
-      const selectedPrix = matieresEtVariations[matiere]?.find(v => v.variation === value)?.prix;
-      setVariation(value);
-      if (selectedPrix !== undefined) {
-        setPrix(selectedPrix);
-      }
-    } else {
-      console.error("Aucune matière sélectionnée.");
+  const handleSelectLargeur = (value: number) => {
+    setLargPiece(value);
+  };
+
+  const handleSelectLongueur = (value: number) => {
+    setLgPiece(value);
+  };
+
+  const handleSelectEpaisseur = (value: number) => {
+    setEpPiece(value);
+  };
+
+  const handleSelectFormat = (value: string) => {
+    if (matiere) {
+      setFormat(value);
     }
   };
 
   return (
     <div className="App">
-      <Title/>
+      <Title />
       <div className="App-insert">
-
-        <div className='positionnement'>
-          <p>Référence de la pièce </p>
-          <InputText onInputRef={setRefPiece}/> 
-        </div>
-
         <div className='positionnement'>
           <p>Choix de la matière </p>
-          <SelectMatiere
-            matieres={Object.keys(matieresEtVariations) as MatiereType[]}
+          <ListeMatiere
             onSelectMatiere={handleSelectMatiere}
-            selectedMatiere={matiere}
           />
           {matiere && (
-            <VariationMatiere
-              variations={matieresEtVariations[matiere].map(v => v.variation)}
-              onSelectVariation={handleSelectVariation}
-              selectedVariation={variation}
+            <ListeFormat
+              onSelectFormat={handleSelectFormat}
             />
           )}
         </div>
 
         <div className='positionnement'>
-          <p>Longueur de la pièce (mm) </p>
-          <InputNum onInputNum={setLgPiece}/>
-          <p>Format de la matière</p>
-          <SelectFormat
-            format={formatMatiere}
-            onSelectFormat={handleSelectFormat}
-            selectedFormat={format}
+          <p>Longueur (mm) : </p>
+          <ListeLongueur
+            onSelectLongueur={handleSelectLongueur}
+          />
+          <p>Largeur (mm) : </p>
+          <ListeLargeur
+            onSelectLargeur={handleSelectLargeur}
+          />
+          <p>Epaisseur (mm) : </p>
+          <ListeEpaisseur
+            onSelectEpaisseur={handleSelectEpaisseur}
           />
         </div>
-
-        <div className='positionnement'>
-          <p>Nombre de pièce </p>
-          <InputNum onInputNum={setQtePiece}/>
-        </div>
-
       </div>
 
-      <Bouton onClick={handleShowChoices}/>
-
+      <Bouton onClick={handleShowChoices} />
 
       {showChoices && (
         <div className='choix'>
           <ul>
-            <li>Référence Pièce : {refPiece}</li>
-            <li>Matière : {matiere} {variation}</li>
-            <li>Prix de la matière : {prix} €</li>
-            <li>Longueur de la pièce : {longueurPiece}</li>
-            <li>Format de la matière : {format}</li>
-            <li>Nombre de pièce : {quantitePiece}</li>
-
+            <li>Matière : {matiere} {format}</li>
+            <li>Longueur de la pièce : {longueurPiece} mm</li>
+            <li>Largeur de la pièce : {largeurPiece} mm</li>
+            <li>Epaisseur de la pièce : {epaisseurPiece} mm</li>
           </ul>
         </div>
       )}
