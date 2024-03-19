@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './App.css';
 import Title from './components/Title/Title';
 import Bouton from './components/Button/button';
@@ -8,16 +8,26 @@ import ListeFormat from './components/liste-format/listeFormat';
 import ListeLongueur from './components/liste-longueur/listeLongueur';
 import ListeLargeur from './components/liste-largeur/listeLargeur';
 import ListeEpaisseur from './components/liste-epaisseur/listeEpaisseur';
+import InputLogin from './components/InputLogin/InputLogin';
+import BoutonValidation from './components/validation-login/validationLogin';
+import PrixMatiere from './components/prix-matiere/prixMatiere';
 
-forgeToken();
+const matiereChoisie = ListeMatiere;
+
+type MatiereType = keyof typeof matiereChoisie;
+
 
 function App() {
-  const [matiere, setMatiere] = useState('');
+  const [eMail, setEmail] = useState('');
+  const [motDePasse, setMdP] = useState('');
+  const [matiere, setMatiere] = useState<MatiereType | ''>('');
   const [format, setFormat] = useState('');
-  const [longueurPiece, setLgPiece] = useState<number | ''>(''); 
-  const [largeurPiece, setLargPiece] = useState<number | ''>(''); 
-  const [epaisseurPiece, setEpPiece] = useState<number | ''>(''); 
+  const [longueurPiece, setLgPiece] = useState<number>(1);
+  const [largeurPiece, setLargPiece] = useState<number>(1);
+  const [epaisseurPiece, setEpPiece] = useState<number>(1);
   const [showChoices, setShowChoices] = useState(false);
+  const [showConnection, setShowConnection] = useState(false);
+  const [prix, setPrix] = useState<number>(1);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -30,72 +40,150 @@ function App() {
     setShowChoices(true);
   };
 
+  const handleShowConnection = () => {
+    setShowConnection(true);
+  };
+
   const handleSelectMatiere = (value: string) => {
-    setMatiere(value);
-  };
-
-  const handleSelectLargeur = (value: number) => {
-    setLargPiece(value);
-  };
-
-  const handleSelectLongueur = (value: number) => {
-    setLgPiece(value);
-  };
-
-  const handleSelectEpaisseur = (value: number) => {
-    setEpPiece(value);
-  };
-
-  const handleSelectFormat = (value: string) => {
-    if (matiere) {
-      setFormat(value);
+    if(value){
+      setMatiere(value as MatiereType);   
     }
   };
 
+  const handleSelectFormat = (value: string) => {
+      if (matiere) {
+        setFormat(value); 
+      }
+  };
+
+  const handleSelectLongueur = (value: number) => {
+    if (matiere && format) {
+      setLgPiece(value);
+    }
+  };
+
+
+  const handleSelectLargeur = (value: number) => {
+    if (matiere && format && longueurPiece) {
+      setLargPiece(value);
+    }
+  };
+
+
+
+  const handleSelectEpaisseur = (value: number) => {
+    if (matiere && format && longueurPiece && largeurPiece) {
+      setEpPiece(value);
+    }
+  };
+
+
+
   return (
+
     <div className="App">
+
       <Title />
+
       <div className="App-insert">
         <div className='positionnement'>
-          <p>Choix de la matière </p>
-          <ListeMatiere
-            onSelectMatiere={handleSelectMatiere}
-          />
-          {matiere && (
-            <ListeFormat
-              onSelectFormat={handleSelectFormat}
+        <p>Email : </p>
+        <InputLogin onInputLogin={setEmail}/>
+        <p>Mot de passe : </p>
+        <InputLogin onInputLogin={setMdP}/>
+        </div>
+      </div>
+
+      <BoutonValidation onClick={handleShowConnection} />
+
+      <br/>
+
+      <div className="App-insert">
+        <div className='positionnement'>
+          <div className='positionnement'>
+            <p>Choix de la matière </p>
+            <ListeMatiere
+              onSelectMatiere={handleSelectMatiere}
             />
+          </div>
+          {matiere && (
+            <div className='positionnement'>
+            <p>Format </p>
+              <ListeFormat
+                matiereSelectionnee={matiere}
+                onSelectFormat={handleSelectFormat}
+              />
+            </div>
           )}
         </div>
-
         <div className='positionnement'>
-          <p>Longueur (mm) : </p>
-          <ListeLongueur
-            onSelectLongueur={handleSelectLongueur}
-          />
-          <p>Largeur (mm) : </p>
-          <ListeLargeur
-            onSelectLargeur={handleSelectLargeur}
-          />
-          <p>Epaisseur (mm) : </p>
-          <ListeEpaisseur
-            onSelectEpaisseur={handleSelectEpaisseur}
-          />
+          { matiere && format && (
+            <div className='positionnement'>
+            <p>Longueur de la pièce (mm) </p>
+              <ListeLongueur
+              matiereSelectionnee={matiere}
+              formatSelectionnee={format}
+              onSelectLongueur={handleSelectLongueur}
+              />
+            </div>
+          )}
+          { matiere && format && longueurPiece && (
+            <div className='positionnement'>
+            <p>Largeur de la pièce (mm) </p>
+              <ListeLargeur
+                matiereSelectionnee={matiere}
+                formatSelectionnee={format}
+                longueurSelectionnee={longueurPiece}
+                onSelectLargeur={handleSelectLargeur}
+              />
+            </div>
+          )}
+          { matiere && format && longueurPiece && largeurPiece && (
+            <div className='positionnement'>
+              <p>Epaisseur de la pièce (mm) </p>
+              <ListeEpaisseur
+                onSelectEpaisseur={handleSelectEpaisseur}
+                matiereSelectionnee={matiere}
+                formatSelectionnee={format}
+                longueurSelectionnee={longueurPiece}
+                largeurSelectionnee={largeurPiece}
+              />
+            </div>
+          )}
         </div>
       </div>
 
       <Bouton onClick={handleShowChoices} />
 
-      {showChoices && (
+      {showConnection && (
         <div className='choix'>
           <ul>
-            <li>Matière : {matiere} {format}</li>
-            <li>Longueur de la pièce : {longueurPiece} mm</li>
-            <li>Largeur de la pièce : {largeurPiece} mm</li>
-            <li>Epaisseur de la pièce : {epaisseurPiece} mm</li>
+            <li>Email : {eMail}</li>
+            <li>MdP : {motDePasse}</li>
           </ul>
         </div>
       )}
+
+{showChoices && (
+  <div className='choix'>
+    <ul>
+      <li>Matière : {matiere} {format}</li>
+      <li>Longueur de la pièce : {longueurPiece} mm</li>
+      <li>Largeur de la pièce : {largeurPiece} mm</li>
+      <li>Epaisseur de la pièce : {epaisseurPiece} mm</li>
+      <PrixMatiere 
+        matiereSelectionnee={matiere}
+        formatSelectionnee={format}
+        longueurSelectionnee={longueurPiece}
+        largeurSelectionnee={largeurPiece}
+        epaisseurSelectionnee={epaisseurPiece}
+        onSelectPrix={(value) => setPrix(value)} 
+      />
+    </ul>
+  </div>
+)}
+
+
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { forgeToken, getToken } from "../../services/authenticationService"; 
 import axios from "axios";
 import { Select } from "antd";
@@ -7,11 +7,15 @@ import './listeLargeur.css'
 const apiURL:string = process.env.REACT_APP_API_URL as string;
 
 interface ListeLargeurProps {
+  matiereSelectionnee: string;
+  formatSelectionnee:string;
+  longueurSelectionnee:number;
   onSelectLargeur: (value: number) => void; 
 }
 
-function ListeLargeur({onSelectLargeur} : ListeLargeurProps) {
+function ListeLargeur({matiereSelectionnee, formatSelectionnee, longueurSelectionnee, onSelectLargeur} : ListeLargeurProps) {
   const [data, setData] = useState<any[]>([]); 
+  const [largeurs, setLargeurs] = useState<number[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,17 +32,18 @@ function ListeLargeur({onSelectLargeur} : ListeLargeurProps) {
     fetchData();  
   },[]);
 
-  const largeurUnique: number[] = [];
-  data.forEach(item => {
-    const largeurNom = parseFloat(item.material.width);
-    if (!largeurUnique.includes(largeurNom)) {
-      largeurUnique.push(largeurNom);
+  useEffect(() =>{
+    if(matiereSelectionnee && formatSelectionnee && longueurSelectionnee){
+      const largeurFilters = data
+        .filter(item=> item.material.name === matiereSelectionnee && item.material.format === formatSelectionnee && item.material.length === longueurSelectionnee )
+        .map(item => item.material.width);
+      const largeurUniques = Array.from(new Set (largeurFilters));
+      setLargeurs(largeurUniques);
+      largeurUniques.sort((a, b) => a - b);
     }
-  });
+  },[matiereSelectionnee, formatSelectionnee, longueurSelectionnee, data])
 
-  largeurUnique.sort((a, b) => a - b);
-
-  const options = largeurUnique.map((largeur, index) => ({
+  const options = largeurs.map((largeur, index) => ({
     key: index,
     value: largeur
   }));

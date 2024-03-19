@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { forgeToken, getToken } from "../../services/authenticationService"; 
 import axios from "axios";
 import { Select } from "antd";
@@ -7,11 +7,14 @@ import './listeLongueur.css'
 const apiURL:string = process.env.REACT_APP_API_URL as string;
 
 interface ListeLongueurProps {
+  matiereSelectionnee: string;
+  formatSelectionnee:string;
   onSelectLongueur: (value: number) => void; 
 }
 
-function ListeLongueur({onSelectLongueur} : ListeLongueurProps) {
+function ListeLongueur({matiereSelectionnee, formatSelectionnee, onSelectLongueur} : ListeLongueurProps) {
   const [data, setData] = useState<any[]>([]); 
+  const [longueurs, setLongueurs] = useState<number[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,17 +31,18 @@ function ListeLongueur({onSelectLongueur} : ListeLongueurProps) {
     fetchData();  
   },[]);
 
-  const longueurUnique: number[] = [];
-  data.forEach(item => {
-    const longueurNom = parseFloat(item.material.length);
-    if (!longueurUnique.includes(longueurNom)) {
-      longueurUnique.push(longueurNom);
+  useEffect(() =>{
+    if(matiereSelectionnee && formatSelectionnee){
+      const longueurfiltres = data
+        .filter(item => item.material.name === matiereSelectionnee && item.material.format === formatSelectionnee)
+        .map(item => item.material.length);
+      const longueursUniques = Array.from(new Set(longueurfiltres));
+      setLongueurs(longueursUniques);  
+      longueursUniques.sort((a, b) => a - b);
     }
-  });
+  }, [matiereSelectionnee, formatSelectionnee, data]);
 
-  longueurUnique.sort((a, b) => a - b);
-
-  const options = longueurUnique.map((longueur, index) => ({
+  const options = longueurs.map((longueur, index) => ({
     key: index,
     value: longueur
   }));

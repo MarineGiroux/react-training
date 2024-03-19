@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { forgeToken, getToken } from "../../services/authenticationService"; 
 import axios from "axios";
 import { Select } from "antd";
@@ -41,18 +41,24 @@ function ListeMatiere({ onSelectMatiere }: ListeMatiereProps) {
 
   matiereUnique.sort((a, b) => a.localeCompare(b));
 
-  const options = matiereUnique.map((matiere, index) => ({
+  const options = matiereUnique.map((matiereNom, index) => ({
     key: index,
-    value: matiere
+    value: matiereNom
   }));
+
+  const idMatiereValues = data.map(item => item.value);
 
   return (
     <Select
       className='matiere'  
       options={options}
       onChange={(value) => onSelectMatiere(value)} 
+      id={idMatiereValues.join('')} 
     />
   );
+
 }
 
 export default ListeMatiere;
+
+
