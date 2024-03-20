@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+// useEffect : pour effectuer des effets de bord dans un composant fonctionnel React (opérations telles que la récupération de données depuis un serveur)
+// useState : pour déclarer une variable d'état (valeurs qui peuvent changer au fil du temps et qui déclenchent une réactualisation du composant chaque fois qu'elles sont mises à jour)
 import "./App.css";
 import Title from "./components/Title/Title";
 import Bouton from "./components/Button/button";
@@ -12,13 +14,19 @@ import BoutonValidation from "./components/validation-login/validationLogin";
 import PrixMatiere from "./components/prix-matiere/prixMatiere";
 import InputLogin from "./components/InputLogin/InputLogin";
 
-const matiereChoisie = ListeMatiere;
+// constantes qui appellent des logs de l'api
 const apiEmail: string = process.env.REACT_APP_API_USER as string;
 const apiMdP: string = process.env.REACT_APP_API_PASSWORD as string;
 
-type MatiereType = keyof typeof matiereChoisie;
+// Créer un type MatiereType qui a toutes les clés de l'objet ListeMatiere
+// keyof : envoie le type de ListeMatiere
+// typeof : opérateur TypeScript qui extrait toutes les clés d'un type d'objet donné
+type MatiereType = keyof typeof ListeMatiere;
 
 function App() {
+  // variables qui stock le choix selectionné (eMail, motDePasse, matiere ...) initialisé à vide "" ou (1)
+  // set... (setEMail, setMotDePasse, setMatiere ...) fonction qui va être utilisée pour mettre à jour la valeur
+  // useState : initialise l'état de la variable à vide ("") ou 1 (1) ou de typeMatiere ou vide (<MatiereType | "">(""))
   const [eMail, setEmail] = useState("");
   const [motDePasse, setMdP] = useState("");
   const [matiere, setMatiere] = useState<MatiereType | "">("");
@@ -31,10 +39,12 @@ function App() {
   const [defaultConnection, setDefaultConnection] = useState(false);
   const [prix, setPrix] = useState<number>(1);
 
+  // fonction de gestion d'événement qui rend la partie ShowChoices visible quand le bouton "afficher" est cliqué
   const handleShowChoices = () => {
     setShowChoices(true);
   };
 
+// fonction de gestion d'événement qui rend la partie ShowConnection visible si quand on clique sur le bouton "se connecter" le mdp et le mail sont conforme, sinon la partie DefaultConnection s'affiche
   const handleShowConnection = () => {
     if (eMail === apiEmail && motDePasse === apiMdP) {
       console.log("sisisi");
@@ -46,12 +56,14 @@ function App() {
     }
   };
 
+  // fonction de gestion d'événement qui si il y a une valeur dans le champ input de la matière, la récupère et met à jour la matière qui est vide avant cet événement
   const handleSelectMatiere = (value: string) => {
     if (value) {
       setMatiere(value as MatiereType);
     }
   };
 
+  // idem avec le format, et vérifie qui il y a une matière selectionnée avant de mettre à jour le format,
   const handleSelectFormat = (value: string) => {
     if (matiere) {
       setFormat(value);
@@ -76,6 +88,7 @@ function App() {
     }
   };
 
+  // affichage
   return (
     <div className="App">
       <Title />
