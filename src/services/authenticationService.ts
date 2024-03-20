@@ -5,6 +5,7 @@ const email:string = process.env.REACT_APP_API_USER as string
 const password:string = process.env.REACT_APP_API_PASSWORD as string
 
 // Objet contenant l'email et le mot de passe pour la génération du token
+// token : unité de données utilisée pour représenter l'authentification, l'autorisation ou d'autres types de droits d'accès.
 const forgeTokenBody = {password, email}
 const loginApi = `${apiURL}/auth/login`
 // clé pour stocker dans local storage le token généré
