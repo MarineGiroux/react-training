@@ -33,3 +33,8 @@ li{
   flex-wrap: nowrap;
   align-items: center;
 }
+
+.erreurLog{
+  color: red;
+  font-size: 15px;
+}
