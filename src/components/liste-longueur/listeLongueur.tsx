@@ -1,35 +1,17 @@
 import { useEffect, useState } from "react";
-import { forgeToken, getToken } from "../../services/authenticationService"; 
-import axios from "axios";
 import { Select } from "antd";
 import './listeLongueur.css'
-
-const apiURL:string = process.env.REACT_APP_API_URL as string;
+import MaterialData from "../MaterialData/materialData";
 
 interface ListeLongueurProps {
   matiereSelectionnee: string;
   formatSelectionnee:string;
   onSelectLongueur: (value: number) => void; 
+  data:MaterialData[];
 }
 
-function ListeLongueur({matiereSelectionnee, formatSelectionnee, onSelectLongueur} : ListeLongueurProps) {
-  const [data, setData] = useState<any[]>([]); 
+function ListeLongueur({matiereSelectionnee, formatSelectionnee, onSelectLongueur, data} : ListeLongueurProps) {
   const [longueurs, setLongueurs] = useState<number[]>([]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await forgeToken(); 
-      const token = getToken(); 
-        const response = await axios.get(`${apiURL}/materials/custom`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        setData(response.data); 
-    };
-
-    fetchData();  
-  },[]);
 
   useEffect(() =>{
     if(matiereSelectionnee && formatSelectionnee){

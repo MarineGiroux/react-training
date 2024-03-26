@@ -1,34 +1,16 @@
 import { useEffect, useState } from "react";
-import { forgeToken, getToken } from "../../services/authenticationService"; 
-import axios from "axios";
 import { Select } from "antd";
 import './listeFormat.css'
-
-const apiURL:string = process.env.REACT_APP_API_URL as string;
+import MaterialData from "../MaterialData/materialData";
 
 interface ListeFormatProps {
   matiereSelectionnee: string;
   onSelectFormat: (value: string) => void; 
+  data:MaterialData[]
 }
 
-function ListeFormat({ matiereSelectionnee, onSelectFormat }: ListeFormatProps) {
-  const [data, setData] = useState<any[]>([]); 
-  const [formats, setFormats] = useState<string[]>([]); 
-
-  useEffect(() => {
-    const fetchData = async () => {
-      await forgeToken(); 
-      const token = getToken(); 
-      const response = await axios.get(`${apiURL}/materials/custom`, {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-      setData(response.data); 
-    };
-
-    fetchData();  
-  },[]);
+function ListeFormat({ matiereSelectionnee, onSelectFormat, data }: ListeFormatProps) {
+   const [formats, setFormats] = useState<string[]>([]); 
 
   useEffect(() => {
     if (matiereSelectionnee) {
@@ -37,7 +19,7 @@ function ListeFormat({ matiereSelectionnee, onSelectFormat }: ListeFormatProps) 
         .map(item => item.material.format);
       const formatsUniques = Array.from(new Set(formatsFiltres));
       setFormats(formatsUniques);
-      formatsUniques.sort((a, b) => a - b);
+      formatsUniques.sort((a, b) => a.localeCompare(b));
     }
   }, [matiereSelectionnee, data]);
 

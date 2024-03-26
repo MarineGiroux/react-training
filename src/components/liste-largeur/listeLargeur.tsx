@@ -1,38 +1,20 @@
 import { useEffect, useState } from "react";
-import { forgeToken, getToken } from "../../services/authenticationService"; 
-import axios from "axios";
 import { Select } from "antd";
 import './listeLargeur.css'
-
-const apiURL:string = process.env.REACT_APP_API_URL as string;
+import MaterialData from "../MaterialData/materialData";
 
 interface ListeLargeurProps {
   matiereSelectionnee: string;
   formatSelectionnee:string;
   longueurSelectionnee:number;
   onSelectLargeur: (value: number) => void; 
+  data:MaterialData[];
 }
 
-function ListeLargeur({matiereSelectionnee, formatSelectionnee, longueurSelectionnee, onSelectLargeur} : ListeLargeurProps) {
-  const [data, setData] = useState<any[]>([]); 
+function ListeLargeur({matiereSelectionnee, formatSelectionnee, longueurSelectionnee, onSelectLargeur, data} : ListeLargeurProps) {
   const [largeurs, setLargeurs] = useState<number[]>([]);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      await forgeToken(); 
-      const token = getToken(); 
-        const response = await axios.get(`${apiURL}/materials/custom`, {
-          headers: {
-            Authorization: `Bearer ${token}`
-          }
-        });
-        setData(response.data); 
-    };
-
-    fetchData();  
-  },[]);
-
-  useEffect(() =>{
+   useEffect(() =>{
     if(matiereSelectionnee && formatSelectionnee && longueurSelectionnee){
       const largeurFilters = data
         .filter(item=> item.material.name === matiereSelectionnee && item.material.format === formatSelectionnee && item.material.length === longueurSelectionnee )
